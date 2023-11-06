@@ -1,10 +1,10 @@
-module github.com/xtaci/kcptun
+module github.com/qidu/kcptun
 
 require (
 	github.com/golang/snappy v0.0.4
 	github.com/pkg/errors v0.9.1
+	github.com/qidu/ktp-go/v6 v6.0.0-20231106043249-9f068f023fdf
 	github.com/urfave/cli v1.22.14
-	github.com/xtaci/kcp-go/v5 v5.6.5
 	github.com/xtaci/smux v1.5.24
 	github.com/xtaci/tcpraw v1.2.25
 	golang.org/x/crypto v0.14.0
