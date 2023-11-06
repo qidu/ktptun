@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/sha1"
+    "strconv"
 	"fmt"
 	"io"
 	"log"
@@ -438,13 +439,21 @@ func main() {
 			return err
 		}
 
+        var key uint32
+        keynum, keyerr := strconv.ParseUint(config.Key, 10, 32)
+        if keyerr != nil {
+            key = 0 // reset to 0x0
+        } else {
+            key = uint32(keynum)
+        }
+		log.Printf("using *key*: %v\n", key)
 		// create multiple listener
 		for port := mp.MinPort; port <= mp.MaxPort; port++ {
 			listenAddr := fmt.Sprintf("%v:%v", mp.Host, port)
 			if config.TCP { // tcp dual stack
 				if conn, err := tcpraw.Listen("tcp", listenAddr); err == nil {
 					log.Printf("Listening on: %v/tcp", listenAddr)
-					lis, err := ktp.ServeConn(block, config.DataShard, config.ParityShard, 0x0, conn)
+					lis, err := ktp.ServeConn(block, config.DataShard, config.ParityShard, key, conn)
 					checkError(err)
 					wg.Add(1)
 					go loop(lis)
@@ -455,7 +464,7 @@ func main() {
 
 			// udp stack
 			log.Printf("Listening on: %v/udp", listenAddr)
-			lis, err := ktp.ListenWithOptions(listenAddr, block, config.DataShard, config.ParityShard, 0x0)
+			lis, err := ktp.ListenWithOptions(listenAddr, block, config.DataShard, config.ParityShard, key)
 			checkError(err)
 			wg.Add(1)
 			go loop(lis)
