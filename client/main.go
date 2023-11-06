@@ -16,7 +16,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
-	kcp "github.com/xtaci/kcp-go/v5"
+	ktp "github.com/qidu/ktp-go/v6"
 	"github.com/xtaci/kcptun/generic"
 	"github.com/xtaci/smux"
 )
@@ -358,37 +358,37 @@ func main() {
 		log.Println("initiating key derivation")
 		pass := pbkdf2.Key([]byte(config.Key), []byte(SALT), 4096, 32, sha1.New)
 		log.Println("key derivation done")
-		var block kcp.BlockCrypt
+		var block ktp.BlockCrypt
 		switch config.Crypt {
 		case "null":
 			block = nil
 		case "sm4":
-			block, _ = kcp.NewSM4BlockCrypt(pass[:16])
+			block, _ = ktp.NewSM4BlockCrypt(pass[:16])
 		case "tea":
-			block, _ = kcp.NewTEABlockCrypt(pass[:16])
+			block, _ = ktp.NewTEABlockCrypt(pass[:16])
 		case "xor":
-			block, _ = kcp.NewSimpleXORBlockCrypt(pass)
+			block, _ = ktp.NewSimpleXORBlockCrypt(pass)
 		case "none":
-			block, _ = kcp.NewNoneBlockCrypt(pass)
+			block, _ = ktp.NewNoneBlockCrypt(pass)
 		case "aes-128":
-			block, _ = kcp.NewAESBlockCrypt(pass[:16])
+			block, _ = ktp.NewAESBlockCrypt(pass[:16])
 		case "aes-192":
-			block, _ = kcp.NewAESBlockCrypt(pass[:24])
+			block, _ = ktp.NewAESBlockCrypt(pass[:24])
 		case "blowfish":
-			block, _ = kcp.NewBlowfishBlockCrypt(pass)
+			block, _ = ktp.NewBlowfishBlockCrypt(pass)
 		case "twofish":
-			block, _ = kcp.NewTwofishBlockCrypt(pass)
+			block, _ = ktp.NewTwofishBlockCrypt(pass)
 		case "cast5":
-			block, _ = kcp.NewCast5BlockCrypt(pass[:16])
+			block, _ = ktp.NewCast5BlockCrypt(pass[:16])
 		case "3des":
-			block, _ = kcp.NewTripleDESBlockCrypt(pass[:24])
+			block, _ = ktp.NewTripleDESBlockCrypt(pass[:24])
 		case "xtea":
-			block, _ = kcp.NewXTEABlockCrypt(pass[:16])
+			block, _ = ktp.NewXTEABlockCrypt(pass[:16])
 		case "salsa20":
-			block, _ = kcp.NewSalsa20BlockCrypt(pass)
+			block, _ = ktp.NewSalsa20BlockCrypt(pass)
 		default:
 			config.Crypt = "aes"
-			block, _ = kcp.NewAESBlockCrypt(pass)
+			block, _ = ktp.NewAESBlockCrypt(pass)
 		}
 
 		createConn := func() (*smux.Session, error) {

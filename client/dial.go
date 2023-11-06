@@ -6,12 +6,12 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	kcp "github.com/xtaci/kcp-go/v5"
+	ktp "github.com/qidu/ktp-go/v6"
 	"github.com/xtaci/kcptun/generic"
 	"github.com/xtaci/tcpraw"
 )
 
-func dial(config *Config, block kcp.BlockCrypt) (*kcp.UDPSession, error) {
+func dial(config *Config, block ktp.BlockCrypt) (*ktp.UDPSession, error) {
 	mp, err := generic.ParseMultiPort(config.RemoteAddr)
 	if err != nil {
 		return nil, err
@@ -30,8 +30,8 @@ func dial(config *Config, block kcp.BlockCrypt) (*kcp.UDPSession, error) {
 		if err != nil {
 			return nil, errors.Wrap(err, "tcpraw.Dial()")
 		}
-		return kcp.NewConn(remoteAddr, block, config.DataShard, config.ParityShard, conn)
+		return ktp.NewConn(remoteAddr, block, config.DataShard, config.ParityShard, 0x0, conn)
 	}
-	return kcp.DialWithOptions(remoteAddr, block, config.DataShard, config.ParityShard)
+	return ktp.DialWithOptions(remoteAddr, block, config.DataShard, config.ParityShard, 0x0)
 
 }

@@ -20,6 +20,9 @@ github.com/klauspost/reedsolomon
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
+# github.com/qidu/ktp-go/v6 v6.0.0-20231106043249-9f068f023fdf
+## explicit; go 1.21
+github.com/qidu/ktp-go/v6
 # github.com/russross/blackfriday/v2 v2.1.0
 ## explicit
 github.com/russross/blackfriday/v2
@@ -38,6 +41,9 @@ github.com/urfave/cli
 # github.com/xtaci/kcp-go/v5 v5.6.5
 ## explicit; go 1.21
 github.com/xtaci/kcp-go/v5
+# github.com/xtaci/kcptun v0.0.0-20231012152936-0440abbc9124
+## explicit; go 1.21
+github.com/xtaci/kcptun/generic
 # github.com/xtaci/smux v1.5.24
 ## explicit; go 1.13
 github.com/xtaci/smux

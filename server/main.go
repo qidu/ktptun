@@ -16,7 +16,7 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 
 	"github.com/urfave/cli"
-	kcp "github.com/xtaci/kcp-go/v5"
+	ktp "github.com/qidu/ktp-go/v6"
 	"github.com/xtaci/kcptun/generic"
 	"github.com/xtaci/smux"
 	"github.com/xtaci/tcpraw"
@@ -359,37 +359,37 @@ func main() {
 		log.Println("initiating key derivation")
 		pass := pbkdf2.Key([]byte(config.Key), []byte(SALT), 4096, 32, sha1.New)
 		log.Println("key derivation done")
-		var block kcp.BlockCrypt
+		var block ktp.BlockCrypt
 		switch config.Crypt {
 		case "null":
 			block = nil
 		case "sm4":
-			block, _ = kcp.NewSM4BlockCrypt(pass[:16])
+			block, _ = ktp.NewSM4BlockCrypt(pass[:16])
 		case "tea":
-			block, _ = kcp.NewTEABlockCrypt(pass[:16])
+			block, _ = ktp.NewTEABlockCrypt(pass[:16])
 		case "xor":
-			block, _ = kcp.NewSimpleXORBlockCrypt(pass)
+			block, _ = ktp.NewSimpleXORBlockCrypt(pass)
 		case "none":
-			block, _ = kcp.NewNoneBlockCrypt(pass)
+			block, _ = ktp.NewNoneBlockCrypt(pass)
 		case "aes-128":
-			block, _ = kcp.NewAESBlockCrypt(pass[:16])
+			block, _ = ktp.NewAESBlockCrypt(pass[:16])
 		case "aes-192":
-			block, _ = kcp.NewAESBlockCrypt(pass[:24])
+			block, _ = ktp.NewAESBlockCrypt(pass[:24])
 		case "blowfish":
-			block, _ = kcp.NewBlowfishBlockCrypt(pass)
+			block, _ = ktp.NewBlowfishBlockCrypt(pass)
 		case "twofish":
-			block, _ = kcp.NewTwofishBlockCrypt(pass)
+			block, _ = ktp.NewTwofishBlockCrypt(pass)
 		case "cast5":
-			block, _ = kcp.NewCast5BlockCrypt(pass[:16])
+			block, _ = ktp.NewCast5BlockCrypt(pass[:16])
 		case "3des":
-			block, _ = kcp.NewTripleDESBlockCrypt(pass[:24])
+			block, _ = ktp.NewTripleDESBlockCrypt(pass[:24])
 		case "xtea":
-			block, _ = kcp.NewXTEABlockCrypt(pass[:16])
+			block, _ = ktp.NewXTEABlockCrypt(pass[:16])
 		case "salsa20":
-			block, _ = kcp.NewSalsa20BlockCrypt(pass)
+			block, _ = ktp.NewSalsa20BlockCrypt(pass)
 		default:
 			config.Crypt = "aes"
-			block, _ = kcp.NewAESBlockCrypt(pass)
+			block, _ = ktp.NewAESBlockCrypt(pass)
 		}
 
 		go generic.SnmpLogger(config.SnmpLog, config.SnmpPeriod)
@@ -399,7 +399,7 @@ func main() {
 
 		// main loop
 		var wg sync.WaitGroup
-		loop := func(lis *kcp.Listener) {
+		loop := func(lis *ktp.Listener) {
 			defer wg.Done()
 			if err := lis.SetDSCP(config.DSCP); err != nil {
 				log.Println("SetDSCP:", err)
@@ -444,7 +444,7 @@ func main() {
 			if config.TCP { // tcp dual stack
 				if conn, err := tcpraw.Listen("tcp", listenAddr); err == nil {
 					log.Printf("Listening on: %v/tcp", listenAddr)
-					lis, err := kcp.ServeConn(block, config.DataShard, config.ParityShard, conn)
+					lis, err := ktp.ServeConn(block, config.DataShard, config.ParityShard, 0x0, conn)
 					checkError(err)
 					wg.Add(1)
 					go loop(lis)
@@ -455,7 +455,7 @@ func main() {
 
 			// udp stack
 			log.Printf("Listening on: %v/udp", listenAddr)
-			lis, err := kcp.ListenWithOptions(listenAddr, block, config.DataShard, config.ParityShard)
+			lis, err := ktp.ListenWithOptions(listenAddr, block, config.DataShard, config.ParityShard, 0x0)
 			checkError(err)
 			wg.Add(1)
 			go loop(lis)

@@ -8,7 +8,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	kcp "github.com/xtaci/kcp-go/v5"
+	ktp "github.com/qidu/ktp-go/v6"
 )
 
 func init() {
@@ -23,7 +23,7 @@ func sigHandler() {
 	for {
 		switch <-ch {
 		case syscall.SIGUSR1:
-			log.Printf("KCP SNMP:%+v", kcp.DefaultSnmp.Copy())
+			log.Printf("KCP SNMP:%+v", ktp.DefaultSnmp.Copy())
 		}
 	}
 }
